@@ -122,3 +122,32 @@ h2,h3{
     margin:15px;
 
 }
+#answers{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    margin-top:25px;
+}
+
+.answerBtn{
+    padding:18px;
+    font-size:20px;
+    border:none;
+    border-radius:12px;
+    background:#2e7d32;
+    color:white;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.answerBtn:hover{
+    transform:scale(1.02);
+}
+
+.correct{
+    background:#2ecc71 !important;
+}
+
+.wrong{
+    background:#e74c3c !important;
+}

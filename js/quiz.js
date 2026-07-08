@@ -44,6 +44,12 @@ function nextPlant() {
 
     document.getElementById("answer").classList.add("hidden");
 
+    createAnswers();
+
+    document
+        .getElementById("nextButton")
+        .classList
+        .add("hidden");
 }
 
 // Válasz megjelenítése
@@ -55,3 +61,75 @@ document.getElementById("showButton").addEventListener("click", () => {
 
 // Következő
 document.getElementById("nextButton").addEventListener("click", nextPlant);
+
+function createAnswers() {
+
+    const container = document.getElementById("answers");
+    container.innerHTML = "";
+
+    // Helyes válasz
+    let options = [currentPlant.latin];
+
+    // Véletlen hibás válaszok
+    while(options.length < 4){
+
+        const random =
+            plants[Math.floor(Math.random()*plants.length)];
+
+        if(!options.includes(random.latin))
+            options.push(random.latin);
+
+    }
+
+    // Keverés
+    options.sort(()=>Math.random()-0.5);
+
+    options.forEach(option=>{
+
+        const btn=document.createElement("button");
+
+        btn.className="answerBtn";
+
+        btn.innerText=option;
+
+        btn.onclick=()=>checkAnswer(btn,option);
+
+        container.appendChild(btn);
+
+    });
+
+}
+
+function checkAnswer(button, answer){
+
+    const buttons =
+        document.querySelectorAll(".answerBtn");
+
+    buttons.forEach(btn=>btn.disabled=true);
+
+    if(answer===currentPlant.latin){
+
+        button.classList.add("correct");
+
+    }else{
+
+        button.classList.add("wrong");
+
+        buttons.forEach(btn=>{
+
+            if(btn.innerText===currentPlant.latin){
+
+                btn.classList.add("correct");
+
+            }
+
+        });
+
+    }
+
+    document
+        .getElementById("nextButton")
+        .classList
+        .remove("hidden");
+
+}
