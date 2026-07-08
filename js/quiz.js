@@ -1,3 +1,5 @@
+let correct = 0;
+let total = 0;
 let plants = [];
 let currentPlant = null;
 let mode = "image";
@@ -102,6 +104,7 @@ function createAnswers() {
 
 function checkAnswer(button, answer){
 
+    total++;
     const buttons =
         document.querySelectorAll(".answerBtn");
 
@@ -109,6 +112,7 @@ function checkAnswer(button, answer){
 
     if(answer===currentPlant.latin){
 
+        correct++;
         button.classList.add("correct");
 
     }else{
@@ -124,12 +128,22 @@ function checkAnswer(button, answer){
             }
 
         });
-
+        
     }
 
     document
         .getElementById("nextButton")
         .classList
         .remove("hidden");
+
+    updateScore();
+
+}
+
+function updateScore(){
+
+    document.getElementById("correctCount").innerText = correct;
+
+    document.getElementById("totalCount").innerText = total;
 
 }

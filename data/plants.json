@@ -7,7 +7,11 @@
     "genus": "Quercus",
     "images": [
       "images/quercus_robur.jpg"
-    ]
+    ],
+    "stats": {
+      "correct": 0,
+      "wrong": 0
+    }
   },
   {
     "id": 2,
@@ -17,6 +21,10 @@
     "genus": "Pinus",
     "images": [
       "images/pinus_sylvestris.jpg"
-    ]
+    ],
+    "stats": {
+      "correct": 0,
+      "wrong": 0
+    }
   }
 ]
