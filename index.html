@@ -16,26 +16,39 @@
 
     <p>Tanuld meg a növényeket képek alapján!</p>
 
-    <div class="menu">
+<div class="menu">
 
-		<button onclick="location.href='quiz.html'">
-			📷 Kép alapján
-		</button>
-		
-        <button id="hungarianMode">
-            🇭🇺 Magyar név alapján
-        </button>
+    <h2>Növénycsoport</h2>
 
-        <button id="latinMode">
-            🌱 Latin név alapján
-        </button>
+    <button id="treesBtn">🌳 Magyarország fái</button>
 
-        <button id="mixedMode">
-            🔀 Vegyes
-        </button>
+    <button id="flowersBtn">🌼 Vadvirágok</button>
 
-    </div>
+    <button id="herbsBtn">🌱 Gyógynövények</button>
 
+    <button id="ornamentalBtn">🌵 Dísznövények</button>
+
+    <hr>
+
+    <h2>Kvíz mód</h2>
+
+    <button onclick="startQuiz('image')">
+        📷 Kép alapján
+    </button>
+
+    <button onclick="startQuiz('hungarian')">
+        🇭🇺 Magyar név alapján
+    </button>
+
+    <button onclick="startQuiz('latin')">
+        🌿 Latin név alapján
+    </button>
+
+    <button onclick="startQuiz('mixed')">
+        🔀 Vegyes
+    </button>
+
+</div>
 </div>
 
 <script src="js/app.js"></script>

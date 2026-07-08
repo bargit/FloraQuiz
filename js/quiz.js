@@ -1,6 +1,8 @@
 let plants = [];
 let currentPlant = null;
+let mode = "image";
 
+// Adatok betöltése
 fetch("data/plants.json")
     .then(response => response.json())
     .then(data => {
@@ -8,71 +10,48 @@ fetch("data/plants.json")
         nextPlant();
     });
 
+// Véletlen növény
 function nextPlant() {
 
-    currentPlant = plants[Math.floor(Math.random() * plants.length)];
+    const random = Math.floor(Math.random() * plants.length);
+    currentPlant = plants[random];
 
-    document.getElementById("plantImage").src = currentPlant.image;
+    const img = document.getElementById("plantImage");
+    const question = document.getElementById("question");
+
+    img.style.display = "none";
+    question.innerHTML = "";
+
+    switch(mode){
+
+        case "image":
+            img.src = currentPlant.images[0];
+            img.style.display = "block";
+            break;
+
+        case "hungarian":
+            question.innerHTML = currentPlant.hungarian;
+            break;
+
+        case "latin":
+            question.innerHTML = currentPlant.latin;
+            break;
+
+    }
 
     document.getElementById("hungarian").innerText = currentPlant.hungarian;
-
     document.getElementById("latin").innerText = currentPlant.latin;
 
     document.getElementById("answer").classList.add("hidden");
 
 }
 
-document.getElementById("showButton").onclick = () => {
+// Válasz megjelenítése
+document.getElementById("showButton").addEventListener("click", () => {
 
     document.getElementById("answer").classList.remove("hidden");
 
-};
+});
 
-document.getElementById("nextButton").onclick = nextPlant;
-
-let mode = "image";
-
-function randomPlant() {
-
-    const random =
-        Math.floor(Math.random() * plants.length);
-
-    currentPlant = plants[random];
-
-}
-
-function showQuestion() {
-
-    randomPlant();
-
-    const img =
-        document.getElementById("plantImage");
-
-    const question =
-        document.getElementById("question");
-
-    img.style.display = "none";
-    question.innerHTML = "";
-
-    if (mode === "image") {
-
-        img.src = currentPlant.images[0];
-        img.style.display = "block";
-
-    }
-
-    if (mode === "hungarian") {
-
-        question.innerHTML =
-            currentPlant.hungarian;
-
-    }
-
-    if (mode === "latin") {
-
-        question.innerHTML =
-            currentPlant.latin;
-
-    }
-
-}
+// Következő
+document.getElementById("nextButton").addEventListener("click", nextPlant);
