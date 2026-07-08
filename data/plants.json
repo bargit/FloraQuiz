@@ -3,18 +3,20 @@
     "id": 1,
     "hungarian": "Kocsányos tölgy",
     "latin": "Quercus robur",
-    "image": "images/quercus_robur.jpg"
+    "family": "Bükkfafélék",
+    "genus": "Quercus",
+    "images": [
+      "images/quercus_robur.jpg"
+    ]
   },
   {
     "id": 2,
     "hungarian": "Erdei fenyő",
     "latin": "Pinus sylvestris",
-    "image": "images/pinus_sylvestris.jpg"
-  },
-  {
-    "id": 3,
-    "hungarian": "Mezei juhar",
-    "latin": "Acer campestre",
-    "image": "images/acer_campestre.jpg"
+    "family": "Fenyőfélék",
+    "genus": "Pinus",
+    "images": [
+      "images/pinus_sylvestris.jpg"
+    ]
   }
 ]
