@@ -2,18 +2,37 @@ let correct = 0;
 let total = 0;
 let plants = [];
 let currentPlant = null;
-let mode = "image";
+let mode = localStorage.getItem("quizMode") || "image";
+let correctAnswer = "";
+const category =
+    localStorage.getItem("category") || "trees";
 
 // Adatok betöltése
 fetch("data/plants.json")
     .then(response => response.json())
     .then(data => {
-        plants = data;
+        plants = data.filter(
+            plant => plant.category === category
+        );
         nextPlant();
     });
 
 // Véletlen növény
 function nextPlant() {
+
+    if (plants.length === 0) {
+
+        alert("Ebben a kategóriában még nincs növény.");
+
+        return;
+    }
+
+    if (mode === "mixed") {
+
+        const modes = ["image", "hungarian", "latin"];
+        mode = modes[Math.floor(Math.random() * modes.length)];
+
+    }
 
     const random = Math.floor(Math.random() * plants.length);
     currentPlant = plants[random];
@@ -27,6 +46,7 @@ function nextPlant() {
     switch(mode){
 
         case "image":
+            question.innerHTML = "Mi ennek a latin neve?";
             img.src = currentPlant.images[0];
             img.style.display = "block";
             break;
@@ -70,17 +90,23 @@ function createAnswers() {
     container.innerHTML = "";
 
     // Helyes válasz
-    let options = [currentPlant.latin];
+    correctAnswer =
+        mode === "latin"
+            ? currentPlant.hungarian
+            : currentPlant.latin;
+
+    let options = [correctAnswer];
 
     // Véletlen hibás válaszok
     while(options.length < 4){
 
-        const random =
-            plants[Math.floor(Math.random()*plants.length)];
+        const wrongAnswer =
+        mode === "latin"
+            ? random.hungarian
+            : random.latin;
 
-        if(!options.includes(random.latin))
-            options.push(random.latin);
-
+        if (!options.includes(wrongAnswer))
+            options.push(wrongAnswer);
     }
 
     // Keverés
@@ -110,7 +136,7 @@ function checkAnswer(button, answer){
 
     buttons.forEach(btn=>btn.disabled=true);
 
-    if(answer===currentPlant.latin){
+    if (answer === correctAnswer) {
 
         correct++;
         button.classList.add("correct");
@@ -119,9 +145,9 @@ function checkAnswer(button, answer){
 
         button.classList.add("wrong");
 
-        buttons.forEach(btn=>{
+        buttons.forEach(btn=> {
 
-            if(btn.innerText===currentPlant.latin){
+            if (btn.innerText===correctAnswer){
 
                 btn.classList.add("correct");
 

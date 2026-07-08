@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "category": "trees",
     "hungarian": "Kocsányos tölgy",
     "latin": "Quercus robur",
     "family": "Bükkfafélék",
@@ -15,6 +16,7 @@
   },
   {
     "id": 2,
+    "category": "trees",
     "hungarian": "Erdei fenyő",
     "latin": "Pinus sylvestris",
     "family": "Fenyőfélék",
