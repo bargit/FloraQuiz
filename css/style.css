@@ -77,3 +77,48 @@ button:hover{
     transform:scale(1.03);
 
 }
+.card{
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+
+}
+
+#plantImage{
+
+    width:100%;
+
+    border-radius:15px;
+
+    margin-bottom:20px;
+
+}
+
+#question{
+
+    font-size:26px;
+
+    text-align:center;
+
+    margin-bottom:20px;
+
+}
+
+.hidden{
+
+    display:none;
+
+}
+
+h2,h3{
+
+    text-align:center;
+
+    margin:15px;
+
+}
