@@ -1,65 +1,84 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>FloraQuiz</title>
 
     <link rel="stylesheet" href="css/style.css">
+
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>🌿 FloraQuiz</h1>
+    <div class="card">
 
-    <p>Tanuld meg a növényeket képek alapján!</p>
+        <h1>🌿 FloraQuiz</h1>
 
-<div class="menu">
+        <p class="subtitle">
+            Tanuld meg Magyarország növényeit!
+        </p>
 
-    <h2>Növénycsoport</h2>
+        <h2>Kategória</h2>
 
-    <button onclick="selectCategory('trees')">
-    🌳 Magyarország fái
-    </button>
+        <div class="buttonGroup">
 
-    <button onclick="selectCategory('wildflowers')">
-    🌼 Vadvirágok
-    </button>
+            <button onclick="selectCategory('trees')">
+                🌳 Magyarország fái
+            </button>
 
-    <button onclick="selectCategory('herbs')">
-    🌱 Gyógynövények
-    </button>
+            <button onclick="selectCategory('wildflowers')">
+                🌼 Vadvirágok
+            </button>
 
-    <button onclick="selectCategory('ornamentals')">
-    🌵 Dísznövények
-    </button>
+            <button onclick="selectCategory('herbs')">
+                🌱 Gyógynövények
+            </button>
 
-    <hr>
+            <button onclick="selectCategory('ornamentals')">
+                🌵 Dísznövények
+            </button>
 
-    <h2>Kvíz mód</h2>
+        </div>
 
-    <button onclick="startQuiz('image')">
-        📷 Kép alapján
-    </button>
+        <h2>Kvíz mód</h2>
 
-    <button onclick="startQuiz('hungarian')">
-        🇭🇺 Magyar név alapján
-    </button>
+        <div class="buttonGroup">
 
-    <button onclick="startQuiz('latin')">
-        🌿 Latin név alapján
-    </button>
+            <button onclick="startQuiz('image')">
+                📷 Kép → Latin név
+            </button>
 
-    <button onclick="startQuiz('mixed')">
-        🔀 Vegyes
-    </button>
+            <button onclick="startQuiz('hungarian')">
+                🇭🇺 Magyar → Latin
+            </button>
+
+            <button onclick="startQuiz('latin')">
+                🌿 Latin → Magyar
+            </button>
+
+            <button onclick="startQuiz('mixed')">
+                🔀 Vegyes
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
-</div>
+
+<button onclick="resetLearning()">
+    🗑 Tanulási statisztika törlése
+</button>
 
 <script src="js/app.js"></script>
 
 </body>
+
 </html>
