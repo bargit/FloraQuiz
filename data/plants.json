@@ -7,7 +7,9 @@
     "family": "Bükkfafélék",
     "genus": "Quercus",
     "images": [
-      "images/quercus_robur.jpg"
+      "images/quercus_robur1.jpg",
+      "images/quercus_robur2.jpg",
+      "images/quercus_robur3.jpg"
     ],
     "stats": {
       "correct": 0,
@@ -23,7 +25,9 @@
     "family": "Fenyőfélék",
     "genus": "Pinus",
     "images": [
-      "images/pinus_sylvestris.jpg"
+      "images/pinus_sylvestris1.jpg",
+      "images/pinus_sylvestris2.jpg",
+      "images/pinus_sylvestris3.jpg"
     ],
     "stats": {
       "correct": 0,

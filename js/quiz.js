@@ -117,6 +117,14 @@ function nextPlant(){
 
 function showQuestion(currentMode){
 
+    const card = document.querySelector(".card");
+
+    card.classList.remove("fade");
+
+    void card.offsetWidth;
+
+    card.classList.add("fade");
+
     const img=document.getElementById("plantImage");
 
     const question=document.getElementById("question");
@@ -129,7 +137,20 @@ function showQuestion(currentMode){
 
             question.innerHTML="Mi ennek a latin neve?";
 
-            img.src=currentPlant.images[0];
+            const randomImage =
+                currentPlant.images[
+                    Math.floor(Math.random() * currentPlant.images.length)
+                ];
+
+            const preload = new Image();
+
+            preload.onload = () => {
+
+                img.src = randomImage;
+
+            };
+
+            preload.src = randomImage;
 
             img.style.display="block";
 
@@ -166,40 +187,42 @@ function showQuestion(currentMode){
 
 function createAnswers(currentMode){
 
-    const container=document.getElementById("answers");
+    const container = document.getElementById("answers");
+    container.innerHTML = "";
 
-    container.innerHTML="";
+    let options = [correctAnswer];
 
-    let options=[correctAnswer];
+    while(options.length < 4){
 
-    while(options.length<4){
-
-        const randomPlant=
+        const randomPlant =
             plants[Math.floor(Math.random()*plants.length)];
 
-        const answer=currentMode==="latin"
-            ? randomPlant.hungarian
-            : randomPlant.latin;
+        const answer =
+            currentMode === "latin"
+                ? randomPlant.hungarian
+                : randomPlant.latin;
 
         if(!options.includes(answer)){
-
             options.push(answer);
-
         }
-
     }
 
     options.sort(()=>Math.random()-0.5);
 
-    options.forEach(answer=>{
+    const letters = ["A","B","C","D"];
 
-        const btn=document.createElement("button");
+    options.forEach((answer,index)=>{
+
+        const btn = document.createElement("button");
 
         btn.className="answerBtn";
 
-        btn.innerText=answer;
+        btn.innerHTML =
+            `<span class="letter">${letters[index]}</span>${answer}`;
 
-        btn.onclick=()=>checkAnswer(btn,answer);
+        btn.dataset.answer = answer;
+
+        btn.onclick = ()=>checkAnswer(btn,answer);
 
         container.appendChild(btn);
 
@@ -215,7 +238,13 @@ function checkAnswer(button,answer){
 
     const buttons=document.querySelectorAll(".answerBtn");
 
-    buttons.forEach(btn=>btn.disabled=true);
+    buttons.forEach(btn=>{
+
+        btn.disabled=true;
+
+        btn.style.cursor="default";
+
+    });
 
     if(answer===correctAnswer){
 

@@ -8,16 +8,18 @@ function getPlantStats(id) {
 
     if (!stats[id]) {
 
-        stats[id] = {
+        const plant = plants.find(p => p.id === id);
+
+        stats[id] = plant?.stats || {
             correct: 0,
             wrong: 0,
-            lastSeen: 0
+            lastSeen: null
         };
 
+        localStorage.setItem("plantStats", JSON.stringify(stats));
     }
 
     return stats[id];
-
 }
 
 function savePlantStats(id, plantStat) {
