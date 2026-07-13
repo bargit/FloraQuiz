@@ -1,38 +1,29 @@
-let selectedCategory = "trees";
+// =====================================================
+// FloraQuiz v1.0 Final
+// app.js
+// =====================================================
 
-function selectCategory(category){
+"use strict";
 
-    selectedCategory = category;
+document.getElementById("correctCount").innerText =
+    getCorrectCount();
 
-    localStorage.setItem("category",category);
+document.getElementById("totalCount").innerText =
+    getTotalCount();
 
-    document.querySelectorAll(".buttonGroup:first-of-type button")
-        .forEach(btn=>btn.style.background="#2e7d32");
 
-    event.target.style.background="#1b5e20";
+function startQuiz(mode) {
 
-}
+    setQuizMode(mode);
 
-function startQuiz(mode){
-
-    localStorage.setItem("quizMode",mode);
-
-    localStorage.setItem("category",selectedCategory);
-
-    location.href="quiz.html";
+    location.href = "quiz.html";
 
 }
 
-function resetLearning() {
+function setCategory(category) {
 
-    if (confirm("Biztosan törlöd a tanulási statisztikát?")) {
-
-        localStorage.removeItem("plantStats");
-        localStorage.removeItem("correct");
-        localStorage.removeItem("total");
-
-        alert("A statisztika törölve.");
-
-    }
+    setCategoryStorage(category);
 
 }
+
+console.log("🌿 FloraQuiz v1.0");

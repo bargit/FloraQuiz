@@ -5,9 +5,10 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <title>FloraQuiz - Kvíz</title>
+    <title>FloraQuiz</title>
 
     <link rel="stylesheet" href="css/style.css">
 
@@ -19,17 +20,17 @@
 
     <div class="card">
 
-        <!-- Fejléc -->
-
         <h1>🌿 FloraQuiz</h1>
 
-        <p id="categoryTitle"></p>
+        <p class="subtitle">
+            Ismerd fel a növényeket!
+        </p>
 
-        <!-- Pontszám -->
+        <div id="categoryTitle"></div>
 
         <div id="scoreBoard">
 
-            <span id="correctCount">0</span>
+            ✔ <span id="correctCount">0</span>
 
             /
 
@@ -37,25 +38,14 @@
 
         </div>
 
-        <!-- Kérdés -->
-
-        <h2 id="question"></h2>
-
-        <!-- Kép -->
+        <div id="question"></div>
 
         <img
             id="plantImage"
             src=""
-            alt="Növény"
-        >
+            alt="Növény">
 
-        <!-- Válaszok -->
-
-        <div id="answers">
-
-        </div>
-
-        <!-- Megoldás -->
+        <div id="answers"></div>
 
         <div id="answer" class="hidden">
 
@@ -65,19 +55,7 @@
 
         </div>
 
-        <!-- Következő -->
-
-        <button
-            id="nextButton"
-            class="hidden">
-
-            Következő →
-
-        </button>
-
-        <br><br>
-
-        <button
+        <button id="backButton"
             class="backButton"
             onclick="location.href='index.html'">
 
@@ -89,6 +67,7 @@
 
 </div>
 
+<script src="js/storage.js"></script>
 <script src="js/quiz.js"></script>
 
 </body>

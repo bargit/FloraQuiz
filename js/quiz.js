@@ -1,71 +1,146 @@
-// ==========================
-// FloraQuiz v2.0
-// ==========================
+"use strict";
+
+// =====================================================
+// FloraQuiz v2.0 Final
+// quiz.js
+// =====================================================
+
+// ----------------------------
+// Állandók
+// ----------------------------
+
+const NEXT_DELAY = 2000;
+
+// ----------------------------
+// Állapot
+// ----------------------------
 
 let plants = [];
 let currentPlant = null;
+let currentMode = "";
+let correctAnswer = "";
 let lastPlantId = -1;
 
-let mode = localStorage.getItem("quizMode") || "image";
-let category = localStorage.getItem("category") || "trees";
+// ----------------------------
+// DOM elemek
+// ----------------------------
 
-let correct = Number(localStorage.getItem("correct")) || 0;
-let total = Number(localStorage.getItem("total")) || 0;
+const imageElement = document.getElementById("plantImage");
+const questionElement = document.getElementById("question");
+const answersElement = document.getElementById("answers");
 
-let correctAnswer = "";
+const answerElement = document.getElementById("answer");
+const hungarianElement = document.getElementById("hungarian");
+const latinElement = document.getElementById("latin");
 
-//----------------------------------
+const correctElement = document.getElementById("correctCount");
+const totalElement = document.getElementById("totalCount");
+
+const categoryTitle = document.getElementById("categoryTitle");
+
+// ----------------------------
+// Kategórianevek
+// ----------------------------
 
 const categoryNames = {
 
     trees: "🌳 Magyarország fái",
+
     wildflowers: "🌼 Vadvirágok",
+
     herbs: "🌱 Gyógynövények",
+
     ornamentals: "🌵 Dísznövények"
 
 };
 
-document.getElementById("categoryTitle").innerText =
-    categoryNames[category];
+// =====================================================
+// Indítás
+// =====================================================
 
-//----------------------------------
+initialize();
 
-fetch("data/plants.json")
+async function initialize() {
 
-.then(response => response.json())
+    try {
 
-.then(data => {
+        categoryTitle.innerText =
+            categoryNames[getCategory()] || "";
 
-    plants = data.filter(p => p.category === category);
+        updateScore();
 
-    updateScore();
+        const response =
+            await fetch("data/plants.json");
 
-    nextPlant();
+        if (!response.ok) {
 
-});
+            throw new Error("Nem sikerült betölteni a plants.json fájlt.");
 
-//----------------------------------
+        }
 
-function updateScore(){
+        const data = await response.json();
 
-    document.getElementById("correctCount").innerText = correct;
-    document.getElementById("totalCount").innerText = total;
+        plants = data.filter(
 
-}
+            plant => plant.category === getCategory()
 
-//----------------------------------
+        );
 
-function nextPlant(){
+        if (plants.length === 0) {
 
-    if(plants.length===0){
+            alert("Ebben a kategóriában nincs növény.");
 
-        alert("Ebben a kategóriában nincs növény.");
+            return;
 
-        return;
+        }
+
+        preloadImages();
+
+        nextQuestion();
 
     }
 
-    const weighted = [];
+    catch (error) {
+
+        console.error(error);
+
+        alert(error.message);
+
+    }
+
+}
+
+// =====================================================
+
+function updateScore() {
+
+    correctElement.innerText =
+        getCorrectCount();
+
+    totalElement.innerText =
+        getTotalCount();
+
+}
+
+// =====================================================
+
+function nextQuestion() {
+
+    answerElement.classList.add("hidden");
+
+    currentPlant = choosePlant();
+
+    currentMode = chooseMode();
+
+    showQuestion();
+
+}
+
+// =====================================================
+
+function choosePlant() {
+
+    const weightedPlants = [];
 
     plants.forEach(plant => {
 
@@ -74,192 +149,281 @@ function nextPlant(){
         let weight = 1;
 
         weight += stat.wrong * 4;
-
         weight -= stat.correct;
 
-        if (weight < 1) weight = 1;
+        if (weight < 1) {
+
+            weight = 1;
+
+        }
 
         for (let i = 0; i < weight; i++) {
 
-            weighted.push(plant);
+            weightedPlants.push(plant);
 
         }
 
     });
 
-    let candidate;
+    if (weightedPlants.length === 1) {
+
+        lastPlantId = weightedPlants[0].id;
+
+        return weightedPlants[0];
+
+    }
+
+    let selectedPlant;
 
     do {
 
-        candidate = weighted[Math.floor(Math.random() * weighted.length)];
+        selectedPlant =
+            weightedPlants[
+                Math.floor(
+                    Math.random() *
+                    weightedPlants.length
+                )
+            ];
 
-    } while (candidate.id === lastPlantId && weighted.length > 1);
+    } while (selectedPlant.id === lastPlantId);
 
-    currentPlant = candidate;
+    lastPlantId = selectedPlant.id;
 
-    lastPlantId=currentPlant.id;
-
-    let currentMode=mode;
-
-    if(mode==="mixed"){
-
-        const modes=["image","hungarian","latin"];
-
-        currentMode=modes[Math.floor(Math.random()*3)];
-
-    }
-
-    showQuestion(currentMode);
+    return selectedPlant;
 
 }
 
-//----------------------------------
+// =====================================================
 
-function showQuestion(currentMode){
+function chooseMode() {
 
-    const card = document.querySelector(".card");
+    const quizMode = getQuizMode();
 
-    card.classList.remove("fade");
+    if (quizMode !== "mixed") {
 
-    void card.offsetWidth;
-
-    card.classList.add("fade");
-
-    const img=document.getElementById("plantImage");
-
-    const question=document.getElementById("question");
-
-    img.style.display="none";
-
-    switch(currentMode){
-
-        case "image":
-
-            question.innerHTML="Mi ennek a latin neve?";
-
-            const randomImage =
-                currentPlant.images[
-                    Math.floor(Math.random() * currentPlant.images.length)
-                ];
-
-            const preload = new Image();
-
-            preload.onload = () => {
-
-                img.src = randomImage;
-
-            };
-
-            preload.src = randomImage;
-
-            img.style.display="block";
-
-            correctAnswer=currentPlant.latin;
-
-            break;
-
-        case "hungarian":
-
-            question.innerHTML=currentPlant.hungarian;
-
-            correctAnswer=currentPlant.latin;
-
-            break;
-
-        case "latin":
-
-            question.innerHTML=currentPlant.latin;
-
-            correctAnswer=currentPlant.hungarian;
-
-            break;
+        return quizMode;
 
     }
 
-    document.getElementById("hungarian").innerText=currentPlant.hungarian;
-    document.getElementById("latin").innerText=currentPlant.latin;
+    const modes = [
 
-    createAnswers(currentMode);
+        "image",
+
+        "hungarian",
+
+        "latin"
+
+    ];
+
+    return modes[
+        Math.floor(
+            Math.random() *
+            modes.length
+        )
+    ];
 
 }
 
-//----------------------------------
+// =====================================================
 
-function createAnswers(currentMode){
+function showQuestion() {
 
-    const container = document.getElementById("answers");
-    container.innerHTML = "";
+    answersElement.innerHTML = "";
 
-    let options = [correctAnswer];
+    answerElement.classList.add("hidden");
 
-    while(options.length < 4){
+    imageElement.src = "";
+
+    imageElement.style.display = "none";
+
+    if (currentMode === "image") {
+
+        questionElement.innerText =
+            "Mi ennek a latin neve?";
+
+        const randomImage =
+            currentPlant.images[
+                Math.floor(
+                    Math.random() *
+                    currentPlant.images.length
+                )
+            ];
+
+        const preload = new Image();
+
+        preload.onload = () => {
+
+            imageElement.src = randomImage;
+
+            imageElement.style.display = "block";
+
+        };
+
+        preload.onerror = () => {
+
+            imageElement.src =
+                "images/no-image.png";
+
+            imageElement.style.display = "block";
+
+        };
+
+        preload.src = randomImage;
+
+        correctAnswer =
+            currentPlant.latin;
+
+    }
+
+    else if (currentMode === "hungarian") {
+
+        questionElement.innerText =
+            currentPlant.hungarian;
+
+        correctAnswer =
+            currentPlant.latin;
+
+    }
+
+    else {
+
+        questionElement.innerText =
+            currentPlant.latin;
+
+        correctAnswer =
+            currentPlant.hungarian;
+
+    }
+
+    hungarianElement.innerText =
+        currentPlant.hungarian;
+
+    latinElement.innerText =
+        currentPlant.latin;
+
+    createAnswers();
+
+}
+
+// =====================================================
+
+function createAnswers() {
+
+    answersElement.innerHTML = "";
+
+    const options = [correctAnswer];
+
+    const maxAnswers = Math.min(4, plants.length);
+
+    while (options.length < maxAnswers) {
 
         const randomPlant =
-            plants[Math.floor(Math.random()*plants.length)];
+            plants[
+                Math.floor(
+                    Math.random() * plants.length
+                )
+            ];
 
-        const answer =
-            currentMode === "latin"
-                ? randomPlant.hungarian
-                : randomPlant.latin;
+		let answer;
 
-        if(!options.includes(answer)){
+		switch (currentMode) {
+
+			case "image":
+			case "hungarian":
+
+				answer = randomPlant.latin;
+				break;
+
+			case "latin":
+
+				answer = randomPlant.hungarian;
+				break;
+
+		}
+        if (!options.includes(answer)) {
+
             options.push(answer);
+
         }
+
     }
 
-    options.sort(()=>Math.random()-0.5);
+    shuffle(options);
 
-    const letters = ["A","B","C","D"];
+    const letters = ["A", "B", "C", "D"];
 
-    options.forEach((answer,index)=>{
+    options.forEach((answer, index) => {
 
-        const btn = document.createElement("button");
+        const button =
+            document.createElement("button");
 
-        btn.className="answerBtn";
+        button.className = "answerBtn";
 
-        btn.innerHTML =
-            `<span class="letter">${letters[index]}</span>${answer}`;
+        button.dataset.answer = answer;
 
-        btn.dataset.answer = answer;
+        button.innerHTML = `
+            <span class="letter">${letters[index]}</span>
+            <span>${answer}</span>
+        `;
 
-        btn.onclick = ()=>checkAnswer(btn,answer);
+        button.onclick = () =>
+            checkAnswer(button, answer);
 
-        container.appendChild(btn);
+        answersElement.appendChild(button);
 
     });
 
 }
 
-//----------------------------------
+// =====================================================
 
-function checkAnswer(button,answer){
+function checkAnswer(button, answer) {
+
+    let correct =
+        getCorrectCount();
+
+    let total =
+        getTotalCount();
 
     total++;
 
-    const buttons=document.querySelectorAll(".answerBtn");
+    const buttons =
+        document.querySelectorAll(".answerBtn");
 
-    buttons.forEach(btn=>{
+    buttons.forEach(btn => {
 
-        btn.disabled=true;
-
-        btn.style.cursor="default";
+        btn.disabled = true;
 
     });
 
-    if(answer===correctAnswer){
+    if (answer === correctAnswer) {
 
         correct++;
-        updatePlant(true);
+
+        updatePlantStats(
+            currentPlant.id,
+            true
+        );
+
         button.classList.add("correct");
 
-    }else{
+    }
 
-        updatePlant(false);
+    else {
+
+        updatePlantStats(
+            currentPlant.id,
+            false
+        );
+
         button.classList.add("wrong");
 
-        buttons.forEach(btn=>{
+        buttons.forEach(btn => {
 
-            if(btn.innerText===correctAnswer){
+            if (
+                btn.dataset.answer ===
+                correctAnswer
+            ) {
 
                 btn.classList.add("correct");
 
@@ -269,11 +433,131 @@ function checkAnswer(button,answer){
 
     }
 
-    localStorage.setItem("correct",correct);
-    localStorage.setItem("total",total);
+    setCorrectCount(correct);
+
+    setTotalCount(total);
 
     updateScore();
 
-    setTimeout(nextPlant,2000);
+    answerElement.classList.remove("hidden");
+
+    setTimeout(
+        nextQuestion,
+        NEXT_DELAY
+    );
 
 }
+
+// =====================================================
+
+function shuffle(array) {
+
+    for (
+        let i = array.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() * (i + 1)
+            );
+
+        [
+            array[i],
+            array[j]
+        ] = [
+            array[j],
+            array[i]
+        ];
+
+    }
+
+    return array;
+
+}
+
+// =====================================================
+// Képek előtöltése
+// =====================================================
+
+function preloadImages() {
+
+    plants.forEach(plant => {
+
+        if (!plant.images) {
+            return;
+        }
+
+        plant.images.forEach(image => {
+
+            const img = new Image();
+
+            img.src = image;
+
+        });
+
+    });
+
+}
+
+// =====================================================
+// Kép hiba kezelése
+// =====================================================
+
+imageElement.onerror = () => {
+
+    imageElement.src = "images/no-image.png";
+
+};
+
+// =====================================================
+// Billentyűzet támogatás
+// =====================================================
+
+document.addEventListener("keydown", (event) => {
+
+    const buttons =
+        document.querySelectorAll(".answerBtn");
+
+    switch (event.key) {
+
+        case "1":
+        case "a":
+        case "A":
+
+            if (buttons[0]) buttons[0].click();
+
+            break;
+
+        case "2":
+        case "b":
+        case "B":
+
+            if (buttons[1]) buttons[1].click();
+
+            break;
+
+        case "3":
+        case "c":
+        case "C":
+
+            if (buttons[2]) buttons[2].click();
+
+            break;
+
+        case "4":
+        case "d":
+        case "D":
+
+            if (buttons[3]) buttons[3].click();
+
+            break;
+
+    }
+
+});
+
+// =====================================================
+// Vége
+// =====================================================

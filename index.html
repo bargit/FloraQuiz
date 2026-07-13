@@ -5,14 +5,11 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>FloraQuiz</title>
 
-    <p class="subtitle">
-        FloraQuiz v4.0
-    </p>
-    
     <link rel="stylesheet" href="css/style.css">
 
 </head>
@@ -26,34 +23,10 @@
         <h1>🌿 FloraQuiz</h1>
 
         <p class="subtitle">
-            Tanuld meg Magyarország növényeit!
+            Ismerd fel Magyarország növényeit!
         </p>
 
-        <h2>Kategória</h2>
-
-        <div class="buttonGroup">
-
-            <button onclick="selectCategory('trees')">
-                🌳 Magyarország fái
-            </button>
-
-            <button onclick="selectCategory('wildflowers')">
-                🌼 Vadvirágok
-            </button>
-
-            <button onclick="selectCategory('herbs')">
-                🌱 Gyógynövények
-            </button>
-
-            <button onclick="selectCategory('ornamentals')">
-                🌵 Dísznövények
-            </button>
-
-        </div>
-
-        <h2>Kvíz mód</h2>
-
-        <div class="buttonGroup">
+        <div class="menu">
 
             <button onclick="startQuiz('image')">
                 📷 Kép → Latin név
@@ -71,9 +44,41 @@
                 🔀 Vegyes
             </button>
 
-            <button onclick="resetLearning()">
-                🗑 Tanulási statisztika törlése
+        </div>
+
+        <hr>
+
+        <h2>Kategóriák</h2>
+
+        <div class="menu">
+
+            <button onclick="setCategory('trees')">
+                🌳 Magyarország fái
             </button>
+
+            <button onclick="setCategory('wildflowers')">
+                🌼 Vadvirágok
+            </button>
+
+            <button onclick="setCategory('herbs')">
+                🌱 Gyógynövények
+            </button>
+
+            <button onclick="setCategory('ornamentals')">
+                🌵 Dísznövények
+            </button>
+
+        </div>
+
+        <hr>
+
+        <div id="scoreBoard">
+
+            ✔ <span id="correctCount">0</span>
+
+            /
+
+            <span id="totalCount">0</span>
 
         </div>
 
@@ -81,6 +86,7 @@
 
 </div>
 
+<script src="js/storage.js"></script>
 <script src="js/app.js"></script>
 
 </body>
