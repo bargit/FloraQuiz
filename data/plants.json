@@ -34,5 +34,62 @@
       "wrong": 0,
       "lastSeen": "2026-07-09T09:15:00"
     }
+  },
+  {
+    "id": 3,
+    "category": "trees",
+    "hungarian": "Cser tölgy",
+    "latin": "Quercus cerris",
+    "family": "Fagaceae",
+    "genus": "Quercus",
+    "images": [
+      "images/quercus_cerris1.jpg",
+      "images/quercus_cerris2.jpg",
+      "images/quercus_cerris3.jpg"
+    ],
+    "stats": {
+      "correct": 0,
+      "wrong": 0,
+      "lastSeen": null
+    }
+  },
+  {
+    "id": 4,
+    "category": "trees",
+    "hungarian": "Közönséges gyertyán",
+    "latin": "Carpinus betulus",
+    "family": "Betulaceae",
+    "genus": "Carpinus",
+    "images": [
+      "images/carpinus_betulus1.jpg",
+      "images/carpinus_betulus2.jpg",
+      "images/carpinus_betulus3.jpg"
+    ],
+    "stats": {
+      "correct": 0,
+      "wrong": 0,
+      "lastSeen": null
+    }
+  },
+  {
+    "id": 5,
+    "category": "trees",
+    "hungarian": "Közönséges bükk",
+    "latin": "Fagus sylvatica",
+    "family": "Fagaceae",
+    "genus": "Fagus",
+    "images": [
+      "images/fagus_sylvatica1.jpg",
+      "images/fagus_sylvatica2.jpg",
+      "images/fagus_sylvatica3.jpg",
+      "images/fagus_sylvatica4.jpg",
+      "images/fagus_sylvatica5.jpg",
+      "images/fagus_sylvatica6.jpg"
+    ],
+    "stats": {
+      "correct": 0,
+      "wrong": 0,
+      "lastSeen": null
+    }
   }
 ]

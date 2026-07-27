@@ -3,16 +3,38 @@
 
 <head>
 
-    <meta charset="UTF-8">
+	<!-- ===================================================== -->
+	<!-- PWA -->
+	<!-- ===================================================== -->
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+	<link rel="manifest" href="manifest.json">
+
+	<meta name="theme-color" content="#2e7d32">
+
+	<meta name="mobile-web-app-capable" content="yes">
+
+	<meta name="apple-mobile-web-app-capable" content="yes">
+
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+	<meta name="apple-mobile-web-app-title" content="FloraQuiz">
+
+	<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+	<meta name="viewport"
+		  content="width=device-width,
+				   initial-scale=1,
+				   viewport-fit=cover">
+				   
+	<meta charset="UTF-8">
 
     <title>FloraQuiz</title>
 
     <link rel="stylesheet" href="css/style.css">
 
 </head>
+
+<script src="js/update.js"></script>
 
 <body>
 
@@ -88,7 +110,29 @@
 
 <script src="js/storage.js"></script>
 <script src="js/app.js"></script>
+<script>
+	if ("serviceWorker" in navigator) {
 
+		window.addEventListener("load", async () => {
+
+			try {
+
+				await navigator.serviceWorker.register("./sw.js");
+
+				console.log("Service Worker regisztrálva.");
+
+			}
+
+			catch (err) {
+
+				console.error(err);
+
+			}
+
+		});
+
+	}
+</script>
 </body>
 
 </html>

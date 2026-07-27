@@ -17,6 +17,7 @@ const NEXT_DELAY = 2000;
 
 let plants = [];
 let currentPlant = null;
+let questionQueue = [];
 let currentMode = "";
 let correctAnswer = "";
 let lastPlantId = -1;
@@ -124,15 +125,63 @@ function updateScore() {
 
 // =====================================================
 
+// =====================================================
+// Prefetch képek
+// =====================================================
+
+function prefetchPlantImages(plant) {
+
+    if (!plant?.images?.length) {
+
+        return;
+
+    }
+
+    plant.images.forEach(image => {
+
+        fetch(image, {
+            cache: "force-cache"
+        }).catch(() => {});
+
+    });
+
+}
+
+// =====================================================
+// Következő kérdés előkészítése
+// =====================================================
+
 function nextQuestion() {
 
     answerElement.classList.add("hidden");
 
-    currentPlant = choosePlant();
+    fillQuestionQueue();
+
+    currentPlant = questionQueue.shift();
 
     currentMode = chooseMode();
 
+    fillQuestionQueue();
+
     showQuestion();
+
+}
+
+// =====================================================
+// Kérdéspuffer feltöltése
+// =====================================================
+
+function fillQuestionQueue() {
+
+    while (questionQueue.length < 2) {
+
+        const plant = choosePlant();
+
+        questionQueue.push(plant);
+
+        prefetchPlantImages(plant);
+
+    }
 
 }
 

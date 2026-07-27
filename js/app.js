@@ -18,6 +18,30 @@ function startQuiz(mode) {
 
     location.href = "quiz.html";
 
+	const update = await checkForUpdates();
+
+	if (update) {
+
+		const answer = confirm(
+
+			"Új adatbázis érhető el.\n\n" +
+
+			"Növények: " +
+
+			update.plants +
+
+			"\n\nLetöltöd?"
+
+		);
+
+		if (answer) {
+
+			// következő lépés
+
+		}
+
+	}	
+
 }
 
 function setCategory(category) {
@@ -25,5 +49,17 @@ function setCategory(category) {
     setCategoryStorage(category);
 
 }
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    async () => {
+
+        await startUpdate();
+
+    }
+
+);
 
 console.log("🌿 FloraQuiz v1.0");
