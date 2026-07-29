@@ -81,24 +81,7 @@ async function initialize() {
 
         const data = await response.json();
 
-        plants = data.filter(
-
-            plant => plant.category === getCategory()
-
-        );
-
-        if (plants.length === 0) {
-
-            alert("Ebben a kategóriában nincs növény.");
-
-            return;
-
-        }
-
-        preloadImages();
-
-        nextQuestion();
-
+		setPlants(data);
     }
 
     catch (error) {
@@ -111,8 +94,6 @@ async function initialize() {
 
 }
 
-// =====================================================
-
 function updateScore() {
 
     correctElement.innerText =
@@ -122,8 +103,6 @@ function updateScore() {
         getTotalCount();
 
 }
-
-// =====================================================
 
 // =====================================================
 // Prefetch képek
@@ -186,6 +165,38 @@ function fillQuestionQueue() {
 }
 
 // =====================================================
+
+// =====================================================
+// Növénylista beállítása
+// =====================================================
+
+function setPlants(allPlants) {
+
+    plants = allPlants.filter(
+
+        plant => plant.category === getCategory()
+
+    );
+
+    if (plants.length === 0) {
+
+        alert("Ebben a kategóriában nincs növény.");
+
+        return false;
+
+    }
+
+    window.plants = plants;
+
+    preloadImages();
+
+    nextQuestion();
+
+    return true;
+
+}
+
+window.setPlants = setPlants;
 
 function choosePlant() {
 

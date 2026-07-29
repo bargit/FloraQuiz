@@ -10,11 +10,9 @@
 // Beállítások
 // -----------------------------------------------------
 
-const UPDATE_URL =
-    "https://bargit.github.io/FloraQuiz/data/version.json";
+const UPDATE_URL = "data/version.json";
 
-const LOCAL_VERSION =
-    "data/version.json";
+const VERSION_KEY = "floraquiz-version";
 
 // -----------------------------------------------------
 // Verzió ellenőrzése
@@ -24,47 +22,47 @@ async function checkForUpdates() {
 
     try {
 
-        const localResponse =
-            await fetch(
-                LOCAL_VERSION,
-                {
-                    cache: "no-cache"
-                }
-            );
+        const response = await fetch(
 
-        const remoteResponse =
-            await fetch(
-                UPDATE_URL,
-                {
-                    cache: "no-cache"
-                }
-            );
+            UPDATE_URL,
 
-        if (
-            !localResponse.ok ||
-            !remoteResponse.ok
-        ) {
+            {
+
+                cache: "no-cache"
+
+            }
+
+        );
+
+        if (!response.ok) {
 
             return null;
 
         }
 
-        const local =
-            await localResponse.json();
+        const remote = await response.json();
 
-        const remote =
-            await remoteResponse.json();
+        const localVersion = Number(
+
+            localStorage.getItem(
+
+                VERSION_KEY
+
+            ) || 0
+
+        );
 
         if (
+
             remote.version >
-            local.version
+
+            localVersion
+
         ) {
 
             return {
 
                 update: true,
-
-                local,
 
                 remote
 
@@ -76,64 +74,7 @@ async function checkForUpdates() {
 
             update: false,
 
-            local,
-
-            remote// -----------------------------------------------------
-// Frissítés indítása
-// -----------------------------------------------------
-
-async function startUpdate() {
-
-    const result =
-        await checkForUpdates();
-
-    if (!result) {
-
-        return;
-
-    }
-
-    if (!result.update) {
-
-        return;
-
-    }
-
-    const answer = confirm(
-
-        "Új növényadatbázis érhető el.\n\n" +
-
-        "Növények: " +
-
-        result.remote.plants +
-
-        "\n" +
-
-        "Képek: " +
-
-        result.remote.images +
-
-        "\n\n" +
-
-        "Szeretnéd letölteni?"
-
-    );
-
-    if (!answer) {
-
-        return;
-
-    }
-
-    // A letöltés a következő modulban készül el
-
-    console.log(
-
-        "Downloading database..."
-
-    );
-
-}
+            remote
 
         };
 
@@ -141,12 +82,97 @@ async function startUpdate() {
 
     catch (error) {
 
-        console.error(
-            "Update check failed:",
-            error
-        );
+        console.error(error);
 
         return null;
+
+    }
+
+}
+
+function getInstalledVersion() {
+
+    return Number(
+
+        localStorage.getItem(
+
+            VERSION_KEY
+
+        ) || 0
+
+    );
+
+}
+
+function saveInstalledVersion(version) {
+
+    localStorage.setItem(
+
+        VERSION_KEY,
+
+        version
+
+    );
+
+}
+
+// =====================================================
+// Új adatbázis letöltése
+// =====================================================
+
+async function downloadPlantsDatabase() {
+
+    const response = await fetch(
+
+        "data/plants.json",
+
+        {
+
+            cache: "no-cache"
+
+        }
+
+    );
+
+    if (!response.ok) {
+
+        throw new Error(
+
+            "Nem sikerült letölteni a plants.json fájlt."
+
+        );
+
+    }
+
+    return await response.json();
+
+}
+
+// =====================================================
+// Frissítés végrehajtása
+// =====================================================
+
+async function performUpdate(remoteVersion) {
+
+    try {
+
+        const newPlants = await downloadPlantsDatabase();
+
+        // Globális növénylista frissítése
+
+		window.setPlants(newPlants);
+
+        saveInstalledVersion(remoteVersion.version);
+
+        alert("Az adatbázis sikeresen frissült.");
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert("A frissítés nem sikerült.");
 
     }
 
@@ -199,12 +225,11 @@ async function startUpdate() {
 
     }
 
-    // A letöltés a következő modulban készül el
+    console.log("Downloading database...");
 
-    console.log(
+	await performUpdate(
 
-        "Downloading database..."
+		result.remote
 
-    );
-
+	);
 }
