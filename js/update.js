@@ -136,45 +136,17 @@ async function downloadPlantsDatabase() {
 
     if (!response.ok) {
 
-        throw new Error(
-
-            "Nem sikerült letölteni a plants.json fájlt."
-
-        );
+        throw new Error("Nem sikerült letölteni a plants.json fájlt.");
 
     }
 
-    return await response.json();
+    const plants = await response.json();
 
-}
+    await clearDatabase();
 
-// =====================================================
-// Frissítés végrehajtása
-// =====================================================
+    await savePlantsDatabase(plants);
 
-async function performUpdate(remoteVersion) {
-
-    try {
-
-        const newPlants = await downloadPlantsDatabase();
-
-        // Globális növénylista frissítése
-
-		window.setPlants(newPlants);
-
-        saveInstalledVersion(remoteVersion.version);
-
-        alert("Az adatbázis sikeresen frissült.");
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        alert("A frissítés nem sikerült.");
-
-    }
+    return plants;
 
 }
 
@@ -184,8 +156,7 @@ async function performUpdate(remoteVersion) {
 
 async function startUpdate() {
 
-    const result =
-        await checkForUpdates();
+    const result = await checkForUpdates();
 
     if (!result) {
 
@@ -227,9 +198,7 @@ async function startUpdate() {
 
     console.log("Downloading database...");
 
-	await performUpdate(
+	await downloadDatabase();
 
-		result.remote
-
-	);
+	alert("Az adatbázis sikeresen frissült.");
 }

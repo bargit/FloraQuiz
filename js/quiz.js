@@ -62,26 +62,75 @@ const categoryNames = {
 initialize();
 
 async function initialize() {
+console.log(
 
+    "Database exists:",
+
+    await databaseExists()
+
+);
+
+console.log(
+
+    "Database version:",
+
+    await getDatabaseVersion()
+
+);
+
+console.log(
+
+    "Last update:",
+
+    await getLastUpdate()
+
+);
     try {
 
-        categoryTitle.innerText =
-            categoryNames[getCategory()] || "";
+        categoryTitle.innerText = categoryNames[getCategory()] || "";
 
         updateScore();
 
-        const response =
-            await fetch("data/plants.json");
+        if (
 
-        if (!response.ok) {
+            await databaseEmpty()
 
-            throw new Error("Nem sikerült betölteni a plants.json fájlt.");
+        ) {
+
+            const response = await fetch("data/plants.json");
+
+            const data = await response.json();
+
+            await savePlantsDatabase(data);
 
         }
 
-        const data = await response.json();
+        await startUpdate();
 
-		setPlants(data);
+        plants = await loadPlantsDatabase();
+
+        plants = plants.filter(
+
+            plant =>
+
+                plant.category ===
+
+                getCategory()
+
+        );
+
+        if (plants.length === 0) {
+
+            alert("Ebben a kategóriában nincs növény.");
+
+            return;
+
+        }
+
+        preloadImages();
+
+        nextQuestion();
+
     }
 
     catch (error) {

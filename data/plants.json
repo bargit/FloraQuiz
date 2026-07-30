@@ -81,15 +81,24 @@
     "images": [
       "images/fagus_sylvatica1.jpg",
       "images/fagus_sylvatica2.jpg",
-      "images/fagus_sylvatica3.jpg",
-      "images/fagus_sylvatica4.jpg",
-      "images/fagus_sylvatica5.jpg",
-      "images/fagus_sylvatica6.jpg"
+      "images/fagus_sylvatica3.jpg"
     ],
     "stats": {
       "correct": 0,
       "wrong": 0,
       "lastSeen": null
     }
+  },
+  {
+    "id": 6,
+    "category": "wildflowers",
+    "hungarian": "virág",
+    "latin": "virág",
+    "family": "",
+    "genus": "",
+    "images": [
+      "images/vir_g1.jpg",
+      "images/vir_g2.jpg"
+    ]
   }
 ]
