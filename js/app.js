@@ -5,61 +5,78 @@
 
 "use strict";
 
-document.getElementById("correctCount").innerText =
-    getCorrectCount();
+async function initialize() {
 
-document.getElementById("totalCount").innerText =
-    getTotalCount();
+    try {
 
+        updateScore();
+
+        await autoUpdateDatabase();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+function updateScore() {
+
+    document.getElementById(
+
+        "correctCount"
+
+    ).innerText = getCorrectCount();
+
+    document.getElementById(
+
+        "totalCount"
+
+    ).innerText = getTotalCount();
+
+}
 
 function startQuiz(mode) {
 
     setQuizMode(mode);
 
-    location.href = "quiz.html";
-
-	const update = await checkForUpdates();
-
-	if (update) {
-
-		const answer = confirm(
-
-			"Új adatbázis érhető el.\n\n" +
-
-			"Növények: " +
-
-			update.plants +
-
-			"\n\nLetöltöd?"
-
-		);
-
-		if (answer) {
-
-			// következő lépés
-
-		}
-
-	}	
+    location.href = "quiz.html";	
 
 }
 
-function setCategory(category) {
+function selectCategory(category) {
 
     setCategoryStorage(category);
 
 }
 
-document.addEventListener(
+// =====================================================
+// Service Worker
+// =====================================================
 
-    "DOMContentLoaded",
+if ("serviceWorker" in navigator && ENABLE_SERVICE_WORKER) {
 
-    async () => {
+    navigator.serviceWorker
+        .register("./sw.js")
+        .then(() => {
 
-        await startUpdate();
+            log("Service Worker regisztrálva.");
 
-    }
+    })
+    .catch(error => {
 
-);
+        log(error);
 
-console.log("🌿 FloraQuiz v1.0");
+    });
+
+}
+
+// =====================================================
+// Application indítása
+// =====================================================
+
+initialize();
+log("🌿 FloraQuiz ", APP_VERSION);

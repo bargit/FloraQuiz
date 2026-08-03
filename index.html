@@ -109,30 +109,10 @@
 </div>
 </body>
 
+<script src="js/config.js"></script>
 <script src="js/storage.js"></script>
+<script src="js/database.js"></script>
+<script src="js/update.js"></script>
 <script src="js/app.js"></script>
-<script>
-	if ("serviceWorker" in navigator) {
-
-		window.addEventListener("load", async () => {
-
-			try {
-
-				await navigator.serviceWorker.register("./sw.js");
-
-				console.log("Service Worker regisztrálva.");
-
-			}
-
-			catch (err) {
-
-				console.error(err);
-
-			}
-
-		});
-
-	}
-</script>
 
 </html>

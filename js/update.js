@@ -6,73 +6,27 @@
 
 "use strict";
 
-// -----------------------------------------------------
-// Beállítások
-// -----------------------------------------------------
-
-const UPDATE_URL = "data/version.json";
-
-const VERSION_KEY = "floraquiz-version";
-
-// -----------------------------------------------------
+// =====================================================
 // Verzió ellenőrzése
-// -----------------------------------------------------
+// =====================================================
 
 async function checkForUpdates() {
 
     try {
 
-        const response = await fetch(
+        const localVersion = await getDatabaseVersion();
 
-            UPDATE_URL,
-
-            {
-
-                cache: "no-cache"
-
-            }
-
-        );
-
-        if (!response.ok) {
-
-            return null;
-
-        }
-
-        const remote = await response.json();
-
-        const localVersion = Number(
-
-            localStorage.getItem(
-
-                VERSION_KEY
-
-            ) || 0
-
-        );
-
-        if (
-
-            remote.version >
-
-            localVersion
-
-        ) {
-
-            return {
-
-                update: true,
-
-                remote
-
-            };
-
-        }
+        const remote = await fetchJson(UPDATE_URL);
 
         return {
 
-            update: false,
+            update:
+
+                remote.version >
+
+                localVersion,
+
+            localVersion,
 
             remote
 
@@ -82,7 +36,7 @@ async function checkForUpdates() {
 
     catch (error) {
 
-        console.error(error);
+        console.error("Update check failed:",error);
 
         return null;
 
@@ -90,83 +44,40 @@ async function checkForUpdates() {
 
 }
 
-function getInstalledVersion() {
-
-    return Number(
-
-        localStorage.getItem(
-
-            VERSION_KEY
-
-        ) || 0
-
-    );
-
-}
-
-function saveInstalledVersion(version) {
-
-    localStorage.setItem(
-
-        VERSION_KEY,
-
-        version
-
-    );
-
-}
-
 // =====================================================
-// Új adatbázis letöltése
-// =====================================================
-
-async function downloadPlantsDatabase() {
-
-    const response = await fetch(
-
-        "data/plants.json",
-
-        {
-
-            cache: "no-cache"
-
-        }
-
-    );
-
-    if (!response.ok) {
-
-        throw new Error("Nem sikerült letölteni a plants.json fájlt.");
-
-    }
-
-    const plants = await response.json();
-
-    await clearDatabase();
-
-    await savePlantsDatabase(plants);
-
-    return plants;
-
-}
-
-// -----------------------------------------------------
 // Frissítés indítása
-// -----------------------------------------------------
+// =====================================================
+
+async function performUpdate() {
+
+    const remote = await updateDatabase();
+
+    return remote;
+
+}
 
 async function startUpdate() {
+
+    if (DEV_MODE) {
+        
+        log("Developer mode - online update disabled.");
+        return;
+
+    }
 
     const result = await checkForUpdates();
 
     if (!result) {
 
-        return;
+        return false;
 
     }
 
     if (!result.update) {
 
-        return;
+        console.log("Az adatbázis naprakész.");
+
+        return false;
 
     }
 
@@ -178,27 +89,137 @@ async function startUpdate() {
 
         result.remote.plants +
 
-        "\n" +
-
-        "Képek: " +
+        "\nKépek: " +
 
         result.remote.images +
 
-        "\n\n" +
-
-        "Szeretnéd letölteni?"
+        "\n\nSzeretnéd letölteni?"
 
     );
 
     if (!answer) {
 
-        return;
+        return false;
 
     }
 
-    console.log("Downloading database...");
+    await performUpdate();
 
-	await downloadDatabase();
+    alert(
 
-	alert("Az adatbázis sikeresen frissült.");
+        "Sikeres frissítés.\n\n" +
+
+        "Verzió: " +
+
+        remote.version
+
+    );
+    location.reload();
+
+}
+
+// =====================================================
+// Smart Update Engine
+// =====================================================
+
+async function autoUpdateDatabase() {
+
+    try {
+
+        if (!(await shouldCheckForUpdates())) {
+
+            console.log("Version check skipped.");
+
+            return false;
+
+        }
+
+        await setLastVersionCheck();
+
+        log("Checking for updates...");
+
+        const result =
+
+            await checkForUpdates();
+
+        if (!result) {
+
+            return false;
+
+        }
+
+        if (!result.update) {
+
+            console.log("Database is up to date.");
+
+            return false;
+
+        }
+
+        log("Downloading update...");
+
+        await performUpdate();
+
+        log("Update completed.");
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        return false;
+
+    }
+
+}
+
+async function downloadMissingImages() {
+
+    const images = await getRemoteImageList();
+
+    const cache = await caches.open(IMAGE_CACHE);
+
+    for (const image of images) {
+
+        const cached = await cache.match(image);
+
+        if (cached) {
+
+            continue;
+
+        }
+
+        log("Downloading:", image);
+
+        const response =
+
+            await fetch(
+
+                image,
+
+                {
+
+                    cache: "no-cache"
+
+                }
+
+            );
+
+        if (response.ok) {
+
+            await cache.put(
+
+                image,
+
+                response.clone()
+
+            );
+
+        }
+
+    }
+
 }

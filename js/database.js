@@ -9,7 +9,8 @@
 const DB_NAME = "FloraQuizDB";
 const DB_VERSION = 1;
 const STORE = "plants";
-
+const SETTINGS_STORE = "settings";
+const STATS_STORE = "stats";
 let db = null;
 
 // -----------------------------------------------------
@@ -52,11 +53,11 @@ async function openDatabase() {
 
             }
 			
-			if (!db.objectStoreNames.contains("settings")) {
+			if (!db.objectStoreNames.contains(SETTINGS_STORE)) {
 
                 db.createObjectStore(
 
-                    "settings",
+                    SETTINGS_STORE,
 
                     {
 
@@ -68,11 +69,11 @@ async function openDatabase() {
 
             }
 
-            if (!db.objectStoreNames.contains("stats")) {
+            if (!db.objectStoreNames.contains(STATS_STORE)) {
 
                 db.createObjectStore(
 
-                    "stats",
+                    STATS_STORE,
 
                     {
 
@@ -100,6 +101,28 @@ async function openDatabase() {
         };
 
     });
+
+}
+
+// -----------------------------------------------------
+// JSON letöltése
+// -----------------------------------------------------
+
+async function fetchJson(url) {
+
+    const response = await fetch(url, {
+
+        cache: "no-cache"
+
+    });
+
+    if (!response.ok) {
+
+        throw new Error("Nem sikerült letölteni: " + url);
+
+    }
+
+    return await response.json();
 
 }
 
@@ -163,7 +186,7 @@ async function loadPlantsDatabase() {
 
     const db = await openDatabase();
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
 
         const tx = db.transaction(
 
@@ -195,18 +218,6 @@ async function loadPlantsDatabase() {
 
 }
 
-// -----------------------------------------------------
-
-async function databaseEmpty() {
-
-    const plants =
-
-        await loadPlantsDatabase();
-
-    return plants.length === 0;
-
-}
-
 // =====================================================
 // Beállítás lekérdezése
 // =====================================================
@@ -219,7 +230,7 @@ async function getSetting(key) {
 
         const tx = db.transaction(
 
-            "settings",
+            SETTINGS_STORE,
 
             "readonly"
 
@@ -227,7 +238,7 @@ async function getSetting(key) {
 
         const request =
 
-            tx.objectStore("settings")
+            tx.objectStore(SETTINGS_STORE)
 
               .get(key);
 
@@ -269,13 +280,13 @@ async function setSetting(key, value) {
 
         const tx = db.transaction(
 
-            "settings",
+            SETTINGS_STORE,
 
             "readwrite"
 
         );
 
-        tx.objectStore("settings")
+        tx.objectStore(SETTINGS_STORE)
 
           .put({
 
@@ -331,29 +342,53 @@ async function setDatabaseVersion(version) {
 
 }
 
+// =====================================================
+// Version Check Time
+// =====================================================
+
+async function getLastVersionCheck() {
+
+    return await getSetting("lastVersionCheck");
+
+}
+
+async function setLastVersionCheck(value = Date.now()) {
+
+    await setSetting("lastVersionCheck", value);
+
+}
+
+// -----------------------------------------------------
+// Letelt-e az ellenőrzési idő?
+// -----------------------------------------------------
+
+async function shouldCheckForUpdates() {
+
+    const last = await getLastVersionCheck();
+
+    if (!last) {
+
+        return true;
+
+    }
+
+    return Date.now() - last > UPDATE_INTERVAL;
+
+}
+
 // -----------------------------------------------------
 // Utolsó frissítés
 // -----------------------------------------------------
 
 async function getLastUpdate() {
 
-    return await getSetting(
-
-        "lastUpdate"
-
-    );
+    return await getSetting("lastUpdate");
 
 }
 
-async function setLastUpdate() {
+async function setLastUpdate(value = new Date().toISOString()) {
 
-    await setSetting(
-
-        "lastUpdate",
-
-        new Date().toISOString()
-
-    );
+    await setSetting("lastUpdate", value);
 
 }
 
@@ -368,4 +403,47 @@ async function databaseExists() {
 
     return plants.length > 0;
 
+}
+
+// -----------------------------------------------------
+// Távoli verzió letöltése
+// -----------------------------------------------------
+
+async function getRemoteVersion() {
+
+    return await fetchJson("data/version.json");
+
+}
+
+// -----------------------------------------------------
+// Adatbázis frissítése
+// -----------------------------------------------------
+
+async function updateDatabase() {
+
+    const plants = await fetchJson("data/plants.json");
+
+    await clearDatabase();
+
+    await savePlantsDatabase(plants);
+
+    const remote = await getRemoteVersion();
+
+    await setDatabaseVersion(remote.version);
+
+    await setLastUpdate();
+
+    await downloadMissingImages();
+
+    return remote;
+
+}
+
+// =====================================================
+// Képlista letöltése
+// =====================================================
+
+async function getRemoteImageList() {
+
+    return await fetchJson("data/images.json");
 }

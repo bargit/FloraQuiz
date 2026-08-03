@@ -3,9 +3,9 @@
 // v2.1
 // =====================================================
 
-const STATIC_CACHE = "floraquiz-static-v2";
+const STATIC_CACHE = "floraquiz-static-v3";
 
-const IMAGE_CACHE = "floraquiz-images-v1";
+const IMAGE_CACHE = "floraquiz-images-v3";
 
 const MAX_IMAGE_CACHE_ITEMS = 300;
 
@@ -18,7 +18,12 @@ const STATIC_FILES = [
     "./js/app.js",
     "./js/quiz.js",
     "./js/storage.js",
+    "./js/config.js",
+    "./js/database.js",
+    "./js/update.js",
     "./data/plants.json",
+    "./data/version.json",
+    "./data/images.json",
     "./images/no-image.png",
     "./manifest.json"
 ];
@@ -33,7 +38,18 @@ self.addEventListener("install", event => {
 
 		caches.open(STATIC_CACHE)
 
-            .then(cache => cache.addAll(STATIC_FILES))
+            .then(cache => await Promise.all(
+
+                STATIC_FILES.map(file =>
+
+                    cache.add(file)
+
+                        .catch(() => {})
+
+                )
+
+            )
+            )
     );
 	self.skipWaiting();
 });
@@ -50,21 +66,12 @@ self.addEventListener("activate", event => {
 
             Promise.all(
 
-                keys.map(key => {
-
-                    if (
-
+                keys
+                    .filter(key =>
                         key !== STATIC_CACHE &&
-
                         key !== IMAGE_CACHE
-
-                    ) {
-
-                        return caches.delete(key);
-
-                    }
-
-                })
+                    )
+                    .map(key => caches.delete(key))
 
             )
 
@@ -117,7 +124,11 @@ async function cacheFirst(request) {
 
     try {
 
-        const response = await fetch(request);
+        const response = await fetch(request, {
+
+            cache: "no-cache"
+
+        });
 
         if (response.ok) {
 
@@ -156,6 +167,12 @@ async function cacheFirst(request) {
 
 self.addEventListener("fetch", event => {
 
+    if (event.request.method !== "GET") {
+
+        return;
+
+    }
+    
     const url = new URL(event.request.url);
 
     // -------------------------------------------------
@@ -184,19 +201,10 @@ self.addEventListener("fetch", event => {
 
     event.respondWith(
 
-        caches.match(event.request)
+        fetch(event.request)
 
-            .then(cached => {
-
-                if (cached) {
-
-                    return cached;
-
-                }
-
-                return fetch(event.request);
-
-            })
+        .catch(() => caches.match(event.request) 
+            || caches.match("./index.html"))
 
     );
 

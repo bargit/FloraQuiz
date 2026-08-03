@@ -6,12 +6,6 @@
 // =====================================================
 
 // ----------------------------
-// Állandók
-// ----------------------------
-
-const NEXT_DELAY = 2000;
-
-// ----------------------------
 // Állapot
 // ----------------------------
 
@@ -62,7 +56,7 @@ const categoryNames = {
 initialize();
 
 async function initialize() {
-console.log(
+log(
 
     "Database exists:",
 
@@ -70,7 +64,7 @@ console.log(
 
 );
 
-console.log(
+log(
 
     "Database version:",
 
@@ -78,7 +72,7 @@ console.log(
 
 );
 
-console.log(
+log(
 
     "Last update:",
 
@@ -91,22 +85,13 @@ console.log(
 
         updateScore();
 
-        if (
+        if (!(await databaseExists())) {
 
-            await databaseEmpty()
+//            console.log("Első indítás...");
 
-        ) {
-
-            const response = await fetch("data/plants.json");
-
-            const data = await response.json();
-
-            await savePlantsDatabase(data);
+            await updateDatabase();
 
         }
-
-        await startUpdate();
-
         plants = await loadPlantsDatabase();
 
         plants = plants.filter(
@@ -218,34 +203,6 @@ function fillQuestionQueue() {
 // =====================================================
 // Növénylista beállítása
 // =====================================================
-
-function setPlants(allPlants) {
-
-    plants = allPlants.filter(
-
-        plant => plant.category === getCategory()
-
-    );
-
-    if (plants.length === 0) {
-
-        alert("Ebben a kategóriában nincs növény.");
-
-        return false;
-
-    }
-
-    window.plants = plants;
-
-    preloadImages();
-
-    nextQuestion();
-
-    return true;
-
-}
-
-window.setPlants = setPlants;
 
 function choosePlant() {
 
@@ -435,20 +392,14 @@ function createAnswers() {
 
 		let answer;
 
-		switch (currentMode) {
+        const answer =
 
-			case "image":
-			case "hungarian":
+            currentMode === "latin"
 
-				answer = randomPlant.latin;
-				break;
+                ? randomPlant.hungarian
 
-			case "latin":
+                : randomPlant.latin;
 
-				answer = randomPlant.hungarian;
-				break;
-
-		}
         if (!options.includes(answer)) {
 
             options.push(answer);
@@ -552,7 +503,7 @@ function checkAnswer(button, answer) {
 
     setTimeout(
         nextQuestion,
-        NEXT_DELAY
+        QUESTION_DELAY
     );
 
 }
@@ -604,6 +555,8 @@ function preloadImages() {
 
             img.src = image;
 
+            img.loading = "eager";
+
         });
 
     });
@@ -614,11 +567,9 @@ function preloadImages() {
 // Kép hiba kezelése
 // =====================================================
 
-imageElement.onerror = () => {
+imageElement.onerror = null;
 
-    imageElement.src = "images/no-image.png";
-
-};
+imageElement.src = "images/no-image.png";
 
 // =====================================================
 // Billentyűzet támogatás
@@ -662,7 +613,16 @@ document.addEventListener("keydown", (event) => {
             if (buttons[3]) buttons[3].click();
 
             break;
+  
+        case "Escape":
 
+            if (confirm("Biztosan vissza szeretnél térni a főmenübe?")) {
+
+                location.href = "index.html";
+
+            }
+
+            break;
     }
 
 });

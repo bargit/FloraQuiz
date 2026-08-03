@@ -11,7 +11,9 @@ const STORAGE_KEYS = {
     CORRECT: "correct",
     TOTAL: "total",
     CATEGORY: "category",
-    MODE: "quizMode"
+    MODE: "quizMode",
+    LAST_UPDATE: "lastUpdate",
+    LAST_VERSION_CHECK: "lastVersionCheck"
 
 };
 
@@ -62,35 +64,25 @@ function save(key, value) {
 
 function getCorrectCount() {
 
-    return Number(
-        localStorage.getItem(STORAGE_KEYS.CORRECT)
-    ) || 0;
+    return Number(load(STORAGE_KEYS.CORRECT, 0));
 
 }
 
 function getTotalCount() {
 
-    return Number(
-        localStorage.getItem(STORAGE_KEYS.TOTAL)
-    ) || 0;
+    return Number(load(STORAGE_KEYS.TOTAL, 0));
 
 }
 
 function setCorrectCount(value) {
 
-    localStorage.setItem(
-        STORAGE_KEYS.CORRECT,
-        value
-    );
+    save(STORAGE_KEYS.CORRECT, value);
 
 }
 
 function setTotalCount(value) {
 
-    localStorage.setItem(
-        STORAGE_KEYS.TOTAL,
-        value
-    );
+    save(STORAGE_KEYS.TOTAL, value);
 
 }
 
@@ -108,19 +100,27 @@ function resetScore() {
 
 function getAllPlantStats() {
 
-    return load(
-        STORAGE_KEYS.STATS,
-        {}
-    );
+    return load(STORAGE_KEYS.STATS, {});
 
 }
 
 function saveAllPlantStats(stats) {
 
-    save(
-        STORAGE_KEYS.STATS,
-        stats
-    );
+    save(STORAGE_KEYS.STATS, stats);
+
+}
+
+function createEmptyStats() {
+
+    return {
+
+        correct: 0,
+
+        wrong: 0,
+
+        lastSeen: null
+
+    };
 
 }
 
@@ -130,13 +130,7 @@ function getPlantStats(id) {
 
     if (!stats[id]) {
 
-        stats[id] = {
-
-            correct: 0,
-            wrong: 0,
-            lastSeen: null
-
-        };
+        stats[id] = createEmptyStats();
 
         saveAllPlantStats(stats);
 
@@ -152,13 +146,7 @@ function updatePlantStats(id, isCorrect) {
 
     if (!stats[id]) {
 
-        stats[id] = {
-
-            correct: 0,
-            wrong: 0,
-            lastSeen: null
-
-        };
+        stats[id] = createEmptyStats();
 
     }
 
@@ -172,8 +160,7 @@ function updatePlantStats(id, isCorrect) {
 
     }
 
-    stats[id].lastSeen =
-        new Date().toISOString();
+    stats[id].lastSeen = new Date().toISOString();
 
     saveAllPlantStats(stats);
 
@@ -186,18 +173,14 @@ function updatePlantStats(id, isCorrect) {
 function getCategory() {
 
     return (
-        localStorage.getItem(STORAGE_KEYS.CATEGORY)
-        || "trees"
+        load(STORAGE_KEYS.CATEGORY, "trees")
     );
 
 }
 
 function setCategoryStorage(category) {
 
-    localStorage.setItem(
-        STORAGE_KEYS.CATEGORY,
-        category
-    );
+    save(STORAGE_KEYS.CATEGORY, category);
 
 }
 
@@ -208,17 +191,27 @@ function setCategoryStorage(category) {
 function getQuizMode() {
 
     return (
-        localStorage.getItem(STORAGE_KEYS.MODE)
-        || "image"
+        load(STORAGE_KEYS.MODE, "image")
     );
 
 }
 
 function setQuizMode(mode) {
 
-    localStorage.setItem(
-        STORAGE_KEYS.MODE,
-        mode
+    save(STORAGE_KEYS.MODE, mode);
+
+}
+
+function clearStorage() {
+
+    Object.values(
+
+        STORAGE_KEYS
+
+    ).forEach(key =>
+
+        localStorage.removeItem(key)
+
     );
 
 }
@@ -252,8 +245,6 @@ function getAccuracy() {
 
     }
 
-    return Math.round(
-        (correct / total) * 100
-    );
+    return Math.round((correct / total) * 100);
 
 }
