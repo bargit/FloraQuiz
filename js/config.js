@@ -15,10 +15,9 @@ const DEV_MODE =
 
     location.hostname === "localhost";
 
-const VERSION_URL = "data/version.json";
 const PLANTS_URL = "data/plants.json";
 const IMAGES_URL = "data/images.json";
-const UPDATE_URL = "data/version.json";
+const VERSION_URL = "data/version.json";
 // -----------------------------------------------------
 // Service Worker
 // -----------------------------------------------------

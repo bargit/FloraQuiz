@@ -433,7 +433,7 @@ async function updateDatabase() {
 
     await setLastUpdate();
 
-    await downloadMissingImages();
+//    await downloadMissingImages();
 
     return remote;
 

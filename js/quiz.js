@@ -390,8 +390,6 @@ function createAnswers() {
                 )
             ];
 
-		let answer;
-
         const answer =
 
             currentMode === "latin"

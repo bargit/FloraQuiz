@@ -16,7 +16,7 @@ async function checkForUpdates() {
 
         const localVersion = await getDatabaseVersion();
 
-        const remote = await fetchJson(UPDATE_URL);
+        const remote = await fetchJson(VERSION_URL);
 
         return {
 
