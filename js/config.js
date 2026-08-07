@@ -7,7 +7,7 @@
 const APP_NAME = "FloraQuiz";
 const IMAGE_CACHE = "floraquiz-images-v1";
 const QUESTION_DELAY = 2000;
-const APP_VERSION = "3.0";
+const APP_VERSION = "3.1";
 
 const DEV_MODE =
 
